@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>Shopping Cart</h4>
+                        <div class="breadcrumb__links">
+                            <a href="{% url 'index' %}">Home</a>
+                            <a href="{% url 'shop' %}">Shop</a>
+                            <span>Shopping Cart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+<!-- Shopping Cart Section Begin -->
+<section class="shopping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="shopping__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Attributes</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for cart_product in products %}
+                            <tr>
+                                <td class="product__cart__item">
+                                    <div class="product__cart__item__pic">
+                                        <div class="product__cart__item__text">
+                                            <h6>{{ cart_product.product.title }}</h6>
+                                        </div>
+                                        <img src="{{ cart_product.product.get_first_image }}" width="30%" alt="">
+                                    </div>
+                                </td>
+                                <td class="cart__attributes">
+                                    <p>Size: {{ cart_product.size }}</p>
+                                    <p>Color: {{ cart_product.color }}</p>
+                                    <div class="quantity__item">
+                                        <div class="input-group product-qty align-items-center">
+                                            <span class="input-group-btn">
+                                                <a href="{% url 'plus_minus' cart_product.product.pk 'delete' cart_product.color cart_product.size 1 %}" class="quantity-left-minus btn btn-light btn-number">
+                                                    <span style="font-size: 16px;">&#8722;</span>
+                                                </a>
+                                            </span>
+                                            <input type="text" id="quantity" name="quantity"
+                                                class="form-control input-number text-center p-2 mx-1" value="{{ cart_product.quantity }}">
+                                            <span class="input-group-btn">
+                                                <a href="{% url 'plus_minus' cart_product.product.pk 'add' cart_product.color cart_product.size 1 %}" class="quantity-right-plus btn btn-light btn-number"
+                                                    data-field="">
+                                                    <span style="font-size: 16px;">&#43;</span>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="cart__price">$ {{ cart_product.get_total_price }}</td>
+                                <td class="cart__close">
+                                    <a href="{% url 'plus_minus' cart_product.product.pk 'delete' cart_product.color cart_product.size cart_product.quantity %}" style="background:none; border:none; cursor:pointer;">
+                                    <i class="fa fa-close"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="continue__btn">
+                            <a href="{% url 'shop' %}">Continue Shopping</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="continue__btn update__btn">
+                            <a href="{% url 'clear' %}"><i class="fa fa-trash"></i> Clear cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cart__total">
+                    <h6>Cart total</h6>
+                    <ul>
+                        <li>Total quantity <span>{{ cart_total_quantity }}</span></li>
+                        <li>Total price<span>$ {{ cart_total_price }}</span></li>
+                    </ul>
+                    <a href="{% url 'checkout' %}" class="primary-btn">Proceed to checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Shopping Cart Section End -->
+
+
+{% endblock main %}

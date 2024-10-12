@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <div class="card col-8 p-4 mt-4">
+            <form action="{% url 'create' %}" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-danger">
+                {% if request.resolver_match.url_name == 'update' and 'article' in request.path %}
+                    Change Article
+                {% elif request.resolver_match.url_name == 'create' %}
+                    Create Article
+                {% elif request.resolver_match.url_name == 'edit_user' %}
+                    Change Profile
+                {% elif request.resolver_match.url_name == 'edit' %}
+                    Change Account
+                {% else %}
+                    Submit
+                {% endif %}
+            </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock main %}

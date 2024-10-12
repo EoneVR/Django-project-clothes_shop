@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load clothes_tags %}
+{% block main %}
+
+    <!-- Shop Details Section Begin -->
+    <section class="shop-details">
+        <div class="product__details__pic">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="product__details__breadcrumb">
+                            <a href="{% url 'index' %}">Home</a>
+                            <a href="{% url 'shop' %}">Shop</a>
+                            <span>Product Details</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3 col-md-3">
+                        <ul class="nav nav-tabs" role="tablist">
+                            {% for image in product.images.all %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab" href="#tabs-{{ forloop.counter }}" role="tab">
+                                    <div class="product__thumb__pic set-bg" data-setbg="{{ image.image.url }}">
+                                    </div>
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">
+                                    <div class="product__thumb__pic set-bg" data-setbg="{{ product.get_first_image }}">
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 col-md-9">
+                        <div class="tab-content">
+                            {% for image in product.images.all %}
+                            <div class="tab-pane {% if forloop.first %}active{% endif %}" id="tabs-{{ forloop.counter }}" role="tabpanel">
+                                <div class="product__details__pic__item">
+                                    <img src="{{ image.image.url }}" alt="" class="img-fluid">
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                                <div class="product__details__pic__item">
+                                    <img src="{{ product.get_first_image }}" alt="" class="img-fluid">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="product__details__content">
+            <div class="container">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="product__details__text">
+                            <h4>{{ product.title }}</h4>
+                            <h3>${{ product.get_discount_price }} <span>${{ product.price }}</span></h3>
+                            <p>{{ product.short_description }}</p>
+                            <form action="{% url 'to_cart' product.pk %}" method="POST">
+                                {% csrf_token %}
+                                {{ form.color }}
+                                {{ form.size }}
+                                <div class="product__details__option">
+                                    <div class="product__details__option__size">
+                                        <span>Size:</span>
+                                        {% for size in form.size.field.queryset %}
+                                        <label for="size-{{ size.id }}">{{ size.size.title }}
+                                            <input type="radio" id="size-{{ size.id }}" name="size" value="{{ size.id }}">
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="product__details__option__color">
+                                        <span>Color:</span>
+                                        {% for color in form.color.field.queryset %}
+                                        <label for="color-{{ color.id }}" style="background-color: {{ color.color.color }}; width: 30px; height: 30px; display: inline-block; border-radius: 50%;">
+                                            <input type="radio" id="color-{{ color.id }}" name="color" value="{{ color.id }}">
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="product__details__cart__option">
+                                    <div class="quantity">
+                                        <h6>In stock {{ product.in_stock }}</h6>
+                                        <div class="pro-qty">
+                                            <input type="text" id="quantity" name="quantity" value="1">
+                                        </div>
+                                    </div>
+                                    {% if request.user.is_authenticated %}
+                                    <button type="submit" class="primary-btn">add to cart</button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            <div class="product__details__btns__option">
+                                {% if request.user.is_authenticated %}
+                                {% check_wishlist request product.pk as wish %}
+                                <a href="{% url 'wishlist_action' product.pk %}"><i class="fa fa-heart"></i> add to wishlist</a>
+                                {% endif %}
+                            </div>
+                            <div class="product__details__last__option">
+                                <h5><span>Guaranteed Safe Checkout</span></h5>
+                                <img src="img/shop-details/details-payment.png" alt="">
+                                <ul>
+                                    <li><span>SKU:</span> {{ product.sku }}</li>
+                                    <li><span>Categories:</span> {{ product.category }}</li>
+                                    <li><span>Tag:</span> {{ product.tags }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="product__details__tab">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#tabs-5"
+                                    role="tab">Description</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-7" role="tab">Additional
+                                    information</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" href="#tabs-6" role="tab">Customer
+                                    Comments</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="tabs-5" role="tabpanel">
+                                    <div class="product__details__tab__content">
+                                        <div class="product__details__tab__content__item">
+                                            <h5>Products Infomation</h5>
+                                            <p>{{ product.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tabs-7" role="tabpanel">
+                                    <div class="product__details__tab__content">
+                                        <div class="product__details__tab__content__item">
+                                            <p>{{ product.information }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tabs-6" role="tabpanel">
+                                    <div class="product__details__tab__content">
+                                        <div class="product__details__tab__content__item">
+                                            <form id="form" class="form-group" method="post" action="{% url 'save_review' product.pk %}" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            {{ comment_form.as_p }}
+                                            <button type="submit" class="site-btn mt-4">Post Comment</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <h2>Comments</h2>
+                                    {% for comment in comments %}
+                                    <div class="card mt-5">
+                                      <div class="card-body">
+                                        <h5 class="card-title">{{ comment.username }}</h5>
+                                        <p class="card-text">{{ comment.comment }}</p>
+                                        <p class="card-text"><small class="text-body-secondary">{{ comment.date }}</small></p>
+                                      </div>
+                                      <img src="{{ comment.image.url }}" class="card-img-bottom" alt="..." style="width:40%;">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Shop Details Section End -->
+
+
+    <!-- Latest Blog Section Begin -->
+    <section class="latest spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <span>Latest News</span>
+                        <h2>Fashion New Trends</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for article in articles %}
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="blog__item">
+                        <div class="blog__item__pic set-bg" data-setbg="{{ article.get_image }}"></div>
+                        <div class="blog__item__text">
+                            <span><img src="img/icon/calendar.png" alt=""> {{ article.publish_date }}</span>
+                            <h5>{{ article.title }}</h5>
+                            <a href="{% url 'detail' article.pk %}">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <!-- Latest Blog Section End -->
+
+{% endblock main %}
